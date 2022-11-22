@@ -1,16 +1,16 @@
 import numpy as np
 import cv2
  
-# initialize the HOG descriptor/person detector
+# Inisialisasi Package dan Metode yang digunakan untuk Human Detection
 hog = cv2.HOGDescriptor()
 hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
 cv2.startWindowThread()
 
-# open webcam video stream
-cap = cv2.VideoCapture(0)
+# Buka Video Stream
+cap = cv2.VideoCapture("Live Record 1 okt 22.mp4")
 
-# the output will be written to output.avi
+# Simpen jadi output.avi
 out = cv2.VideoWriter(
     'output.avi',
     cv2.VideoWriter_fourcc(*'MJPG'),
@@ -18,28 +18,28 @@ out = cv2.VideoWriter(
     (640,480))
 
 while(True):
-    # Capture frame-by-frame
+    # Ambil Frame-by-Frame Video Sumber
     ret, frame = cap.read()
 
-    # resizing for faster detection
+    # Resize jadi Lebih Kecil biar gak makan banyak Resource 
     frame = cv2.resize(frame, (640, 480))
-    # using a greyscale picture, also for faster detection
+    # Ubah jadi Grayscale biar HoG mantap + Gak Makan Banyak Resources
     gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
-    # detect people in the image
-    # returns the bounding boxes for the detected objects
+    # Pendeteksian Orang di Video
+    # Buat Bounding Box Kalo Detect Orang
     boxes, weights = hog.detectMultiScale(frame, winStride=(8,8) )
 
     boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
 
     for (xA, yA, xB, yB) in boxes:
-        # display the detected boxes in the colour picture
+        # Warnain Jadi Ijo Framenya (RGB)
         cv2.rectangle(frame, (xA, yA), (xB, yB),
                           (0, 255, 0), 2)
     
-    # Write the output video 
+    # Simpen Hasil Gambaran Bounding Box
     out.write(frame.astype('uint8'))
-    # Display the resulting frame
+    # Tunjukkin Outputnya
     cv2.imshow('frame',frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
